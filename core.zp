@@ -1,0 +1,44 @@
+(module "core"
+  (export
+    (list "attrs?" attrs?)
+    (list "opening-tag" opening-tag)
+    (list "closing-tag" closing-tag)
+    (list "self-closing-tag" self-closing-tag)
+    (list "non-closing-tag" non-closing-tag))
+
+  (space " ")
+  (slash "/")
+  (opening-bracket "<")
+  (closing-bracket ">")
+
+  (self-closing-bracket (++ slash closing-bracket))
+
+  (attrs? (lambda (data) (hash-map? data)))
+
+  (attr-to-string (lambda (name value)
+    (++ (->string name) "=\"" value "\" ")))
+
+  (attrs-to-string (lambda (attrs)
+      (hash:kv-reduce (lambda (acc kv) (++ acc (attr-to-string (car kv) (cadr kv))))
+                      ""
+                      attrs)))
+
+  (-opening-tag (case-lambda
+    ((tag) (-opening-tag tag closing-bracket))
+    ((tag bracket) (++ opening-bracket tag bracket))
+    ((tag attrs bracket) (++ opening-bracket tag space (string:trim (attrs-to-string attrs)) bracket))))
+
+  (opening-tag (case-lambda
+    ((tag) (-opening-tag tag closing-bracket))
+    ((tag attrs) (-opening-tag tag attrs closing-bracket))))
+
+  (closing-tag (lambda (tag) (++ opening-bracket slash tag closing-bracket)))
+
+  (self-closing-tag (lambda (tag . attrs)
+    (let ((attrs (get-from attrs 0 #{})))
+      (-opening-tag tag attrs self-closing-bracket))))
+
+
+  (non-closing-tag (lambda (tag . attrs)
+    (let ((attrs (get-from attrs 0 #{})))
+      (-opening-tag tag attrs closing-bracket)))))

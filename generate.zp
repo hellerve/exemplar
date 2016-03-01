@@ -1,0 +1,51 @@
+(module "generate"
+  (export
+    (list "make-html" make-html)
+    (list "make-xml" make-xml)
+    (list "doctype" doctype))
+
+  (loads "core.zp")
+
+  (core (import-all "core"))
+
+  (make-xml (case-lambda
+              ((tag) (core:self-closing-tag tag))
+              ((tag content) (++ (core:opening-tag tag) content (core:closing-tag tag)))
+              ((tag attrs content)
+                (++ (core:opening-tag tag attrs) content (core:closing-tag tag)))))
+
+  (doctype (case-lambda 
+              (() (core:opening-tag "!DOCTYPE html"))
+              ((arg1 arg2)
+                (core:opening-tag (++ "!DOCTYPE html PUBLIC \"" arg1 "\" \"" arg2 "\"")))))
+
+  (handle-doctype (lambda args
+    (if (eq? (length args) 4)
+      (doctype (caddr args) (cadddr args))
+      (doctype))))
+
+  (make-html (case-lambda 
+    ((tag) (make-xml tag))
+    ((tag data)
+      (case tag
+        (("!doctype") (++ (apply handle-doctype data) "\n"))
+        (("link") (core:non-closing-tag "link" data))
+        (("meta") (core:non-closing-tag "meta" data))
+        (("script")
+          (cond
+            ((core:attrs? data)
+              (make-html "script" data ""))
+            ((string? data)
+              (make-html "script" '() data))))
+        (else
+          (let ((ndata (make-xml tag data)))
+            (cond
+              ((core:attrs? data) (core:self-closing-tag tag data))
+              ((string? data) ndata)
+              ((list? data) (list:flatten ndata)))))))
+    (args
+      (let ((tag (car args))
+            (maybe-attrs (cadr args)))
+        (if (core:attrs? maybe-attrs)
+          (make-xml tag maybe-attrs (apply ++ (cddr args)))
+          (make-xml tag (apply ++ (cdr args)))))))))
