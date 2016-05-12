@@ -9,7 +9,7 @@ awkwardnesses (and introduces another, yay).
 The port is compatible enough with the original version to look familiar.
 
 ````clojure
-(load "exemplar")
+(load "exemplar/exemplar")
 
 (++ (doctype) (html (-head) (body (p "i am some text"))))
 ; => <!DOCTYPE html>\n<html><head /><body><p>i am some text</p></body></html>

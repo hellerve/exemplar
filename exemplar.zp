@@ -4,7 +4,7 @@
       (defelem tag (->string 'tag)))
     ((_ tag as)
       (define tag
-        (let ((mk-html (begin (load "generate") (import "generate:make-html"))))
+        (let ((mk-html (begin (load "exemplar/generate") (import "generate:make-html"))))
           (case-lambda
             (() (mk-html as))
             ((content) (mk-html as content))

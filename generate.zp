@@ -4,9 +4,10 @@
     (list "make-xml" make-xml)
     (list "doctype" doctype))
 
-  (loads "core.zp")
-
-  (core (import-all "core"))
+  (core 
+    (begin
+      (load "exemplar/core.zp")
+      (import-all "core")))
 
   (make-xml (case-lambda
               ((tag) (core:self-closing-tag tag))
