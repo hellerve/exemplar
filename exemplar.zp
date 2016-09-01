@@ -3,12 +3,18 @@
     ((_ tag)
       (defelem tag (->string 'tag)))
     ((_ tag as)
-      (define tag
+      (with-environment env
         (let ((mk-html (begin (load "exemplar/generate") (import "generate:make-html"))))
-          (case-lambda
-            (() (mk-html as))
-            ((content) (mk-html as content))
-            ((attrs content) (mk-html as attrs content))))))))
+          (eval `(define ,(cons 'tag  (cons 'args))
+            ,(++ "A function that generates a " as " tag.
+                 Optionally takes attributes as a hashmap and a variable number of
+                 child elements.
+
+                 params:
+                  - args: the varargs described above
+                 complexity: O(n) where n is the number of child elements
+                 returns: a HTML string")
+            (apply ,mk-html (cons ,as args))) env))))))
 
 ;; root
 (defelem !doctype)
