@@ -1,12 +1,12 @@
-#{:name "exemplar" 
-  :version "1.0.0" 
-  :license "GPLv2" 
+#{:name "exemplar"
+  :version "1.0.1"
+  :license "GPLv2"
   :tests []
   :type :library
-  :author #{:name "Veit Heller" 
-            :email "veit@veitheller.de" 
+  :author #{:name "Veit Heller"
+            :email "veit@veitheller.de"
             :github "@hellerve"}
-  :location #{:github "hellerve/exemplar" 
+  :location #{:github "hellerve/exemplar"
               :zpr "exemplar"}
   :zepto #{:version :any
            :ez #f
